@@ -8,6 +8,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 
@@ -119,7 +121,7 @@ export async function sendLocalNotification(title: string, body: string, data?: 
         data: data || {},
         badge: 1,
       },
-      trigger: { seconds: 1 },
+      trigger: { type: 'time', seconds: 1 } as any,
     });
   } catch (error) {
     console.error('Error sending local notification:', error);

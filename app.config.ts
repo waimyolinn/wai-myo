@@ -65,7 +65,6 @@ const config: ExpoConfig = {
         category: ["BROWSABLE", "DEFAULT"],
       },
     ],
-    screenOrientation: "portrait",
   },
   web: {
     bundler: "metro",
@@ -107,14 +106,6 @@ const config: ExpoConfig = {
           minSdkVersion: 24,
           usesCleartextTraffic: true,
         },
-      },
-    ],
-    ["react-native-webview"],
-    [
-      "expo-notifications",
-      {
-        icon: "./assets/images/icon.png",
-        color: "#E91E63",
       },
     ],
   ],
