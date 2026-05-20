@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "543668158288",
-    "project_id": "mibamyitta-8e457",
-    "storage_bucket": "mibamyitta-8e457.firebasestorage.app"
+    "project_number": "357332210973",
+    "project_id": "mibamyitta-99a71",
+    "storage_bucket": "mibamyitta-99a71.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:543668158288:android:f37f619c127ec7a32bb655",
+        "mobilesdk_app_id": "1:357332210973:android:00a6f44417454c8963bdf4",
         "android_client_info": {
           "package_name": "com.mibamyitta.shop"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAjQBiqRhVLMbjKAHKD9fu2Ui2afrJF7wE"
+          "current_key": "AIzaSyBANzefsTiemzTknkNBMpttTT16W5TLvUA"
         }
       ],
       "services": {
