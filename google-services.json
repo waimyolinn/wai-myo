@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:357332210973:android:00a6f44417454c8963bdf4",
+        "mobilesdk_app_id": "1:357332210973:android:4263ed2f064aef4963bdf4",
         "android_client_info": {
-          "package_name": "com.mibamyitta.shop"
+          "package_name": "com.mibamyitta.wm"
         }
       },
       "oauth_client": [],

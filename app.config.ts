@@ -3,7 +3,7 @@ import "./scripts/load-env.js";
 import type { ExpoConfig } from "expo/config";
 
 // Custom package name for မိဘမေတ္တာ အထည်ဆိုင်
-const customPackageName = "com.mibamyitta.shop";
+const customPackageName = "com.mibamyitta.wm";
 
 const env = {
   // App branding - update these values directly (do not use env vars)
