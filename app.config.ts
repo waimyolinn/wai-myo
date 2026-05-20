@@ -20,11 +20,11 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "1.0.0",
+  version: "2.0.0",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
-  userInterfaceStyle: "automatic",
+  userInterfaceStyle: "dark",
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
@@ -35,7 +35,7 @@ const config: ExpoConfig = {
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: "#FFFFFF",
+      backgroundColor: "#84102d",
       foregroundImage: "./assets/images/android-icon-foreground.png",
       backgroundImage: "./assets/images/android-icon-background.png",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
@@ -43,7 +43,15 @@ const config: ExpoConfig = {
     edgeToEdgeEnabled: true,
     predictiveBackGestureEnabled: false,
     package: env.androidPackage,
-    permissions: ["POST_NOTIFICATIONS", "INTERNET", "ACCESS_NETWORK_STATE"],
+    permissions: [
+      "POST_NOTIFICATIONS",
+      "INTERNET",
+      "ACCESS_NETWORK_STATE",
+      "VIBRATE",
+      "WRITE_EXTERNAL_STORAGE",
+      "READ_EXTERNAL_STORAGE",
+    ],
+    screenOrientation: "portrait",
     intentFilters: [
       {
         action: "VIEW",
@@ -61,6 +69,14 @@ const config: ExpoConfig = {
             scheme: "http",
             host: "mibamyitta.shop",
           },
+          {
+            scheme: "viber",
+            host: "*",
+          },
+          {
+            scheme: "tg",
+            host: "*",
+          },
         ],
         category: ["BROWSABLE", "DEFAULT"],
       },
@@ -70,9 +86,11 @@ const config: ExpoConfig = {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
+    backgroundColor: "#1a1a1a",
   },
   plugins: [
     "expo-router",
+    "expo-notifications",
     [
       "expo-audio",
       {
@@ -92,9 +110,9 @@ const config: ExpoConfig = {
         image: "./assets/images/splash-icon.png",
         imageWidth: 200,
         resizeMode: "contain",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#1a1a1a",
         dark: {
-          backgroundColor: "#000000",
+          backgroundColor: "#1a1a1a",
         },
       },
     ],
@@ -105,6 +123,8 @@ const config: ExpoConfig = {
           buildArchs: ["armeabi-v7a", "arm64-v8a"],
           minSdkVersion: 24,
           usesCleartextTraffic: true,
+          compileSdkVersion: 36,
+          targetSdkVersion: 36,
         },
       },
     ],
@@ -113,6 +133,8 @@ const config: ExpoConfig = {
     typedRoutes: true,
     reactCompiler: true,
   },
+  // Fullscreen mode for WebView app
+  assetBundlePatterns: ["**/*"],
 };
 
 export default config;
