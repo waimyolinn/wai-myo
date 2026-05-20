@@ -21,10 +21,11 @@ export default function TabLayout() {
         tabBarStyle: {
           paddingTop: 8,
           paddingBottom: bottomPadding,
-          height: tabBarHeight,
+          height: 0, // Hide tab bar for fullscreen WebView
           backgroundColor: colors.background,
           borderTopColor: colors.border,
-          borderTopWidth: 0.5,
+          borderTopWidth: 0,
+          display: "none",
         },
       }}
     >
@@ -33,6 +34,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarLabel: () => null,
         }}
       />
     </Tabs>
