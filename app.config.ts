@@ -21,7 +21,7 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   version: "2.0.0",
-  icon: "./assets/images/icon.png",
+  icon: "./assets/images/icon-original.png",
   scheme: env.scheme,
   userInterfaceStyle: "dark",
   newArchEnabled: true,
