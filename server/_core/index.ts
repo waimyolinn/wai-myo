@@ -62,6 +62,60 @@ async function startServer() {
     res.json({ ok: true, timestamp: Date.now() });
   });
 
+  // Telegram webhook endpoint
+  app.post("/api/webhook/telegram", async (req, res) => {
+    try {
+      const { title, body, imageUrl } = req.body;
+      console.log("[Telegram Webhook] Received:", { title, body, imageUrl });
+
+      if (!title || !body) {
+        return res.status(400).json({ error: "Missing title or body" });
+      }
+
+      // Store notification
+      const notification = {
+        id: Date.now().toString(),
+        title,
+        body,
+        imageUrl,
+        timestamp: Date.now(),
+      };
+
+      console.log("[Telegram Webhook] Stored notification:", notification);
+      res.json({ success: true, notificationId: notification.id });
+    } catch (error) {
+      console.error("[Telegram Webhook] Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Vercel webhook endpoint
+  app.post("/api/webhook/vercel", async (req, res) => {
+    try {
+      const { title, body, imageUrl } = req.body;
+      console.log("[Vercel Webhook] Received:", { title, body, imageUrl });
+
+      if (!title || !body) {
+        return res.status(400).json({ error: "Missing title or body" });
+      }
+
+      // Store notification
+      const notification = {
+        id: Date.now().toString(),
+        title,
+        body,
+        imageUrl,
+        timestamp: Date.now(),
+      };
+
+      console.log("[Vercel Webhook] Stored notification:", notification);
+      res.json({ success: true, notificationId: notification.id });
+    } catch (error) {
+      console.error("[Vercel Webhook] Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.use(
     "/api/trpc",
     createExpressMiddleware({

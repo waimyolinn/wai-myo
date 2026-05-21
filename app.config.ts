@@ -11,7 +11,7 @@ const env = {
   appSlug: "mibamyitta-app",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "",
+  logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-GPAMvZnoaFVQfxM549bJAg.webp",
   scheme: "mibamyitta",
   iosBundleId: customPackageName,
   androidPackage: customPackageName,
@@ -21,6 +21,7 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   version: "2.0.0",
+  projectId: "30451cbd-a868-4d74-8c68-85bcaf2cad3e",
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
@@ -135,6 +136,7 @@ const config: ExpoConfig = {
   },
   // Fullscreen mode for WebView app
   assetBundlePatterns: ["**/*"],
+  owner: "waimyo",
 };
 
 export default config;

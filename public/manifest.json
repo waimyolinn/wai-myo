@@ -1,0 +1,34 @@
+{
+  "name": "မိဘမေတ္တာ အထည်ဆိုင်",
+  "short_name": "MIBA MYITTA",
+  "description": "Mother's Love Clothing Store - ကြည်လည်ရန်နှင့် ဝယ်ယူရန်အတွက် အကောင်းဆုံးနေရာ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#E91E63",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-GPAMvZnoaFVQfxM549bJAg.webp",
+      "sizes": "1248x1248",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-nPhfgNvDSkxc2VzMYTGiHB.png",
+      "sizes": "1248x1248",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-GPAMvZnoaFVQfxM549bJAg.webp",
+      "sizes": "1248x1248",
+      "type": "image/webp",
+      "form_factor": "narrow"
+    }
+  ]
+}
