@@ -104,18 +104,7 @@ const config: ExpoConfig = {
         supportsPictureInPicture: true,
       },
     ],
-    [
-      "expo-splash-screen",
-      {
-        image: "./assets/images/splash-icon.png",
-        imageWidth: 200,
-        resizeMode: "contain",
-        backgroundColor: "#1a1a1a",
-        dark: {
-          backgroundColor: "#1a1a1a",
-        },
-      },
-    ],
+
     [
       "expo-build-properties",
       {
