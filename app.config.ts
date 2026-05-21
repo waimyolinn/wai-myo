@@ -21,8 +21,6 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   version: "2.0.0",
-
-  orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "dark",
@@ -52,7 +50,7 @@ const config: ExpoConfig = {
       "WRITE_EXTERNAL_STORAGE",
       "READ_EXTERNAL_STORAGE",
     ],
-    screenOrientation: "portrait",
+
     intentFilters: [
       {
         action: "VIEW",
@@ -89,7 +87,8 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
     backgroundColor: "#1a1a1a",
   },
-  plugins: [
+    plugins: [
+      "expo-asset",
     "expo-router",
     "expo-notifications",
     [
