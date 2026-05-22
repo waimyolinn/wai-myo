@@ -39,9 +39,28 @@ export default function RootLayout() {
     initManusRuntime();
   }, []);
 
-  // Initialize push notifications
+  // Initialize push notifications and register token with backend
   useEffect(() => {
-    registerForPushNotificationsAsync();
+    const setupNotifications = async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        try {
+          // Register token with our Vercel backend
+          await fetch('https://mibamyitta.shop/api/register-token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+          });
+          console.log('Token registered with backend');
+        } catch (error) {
+          console.error('Error registering token with backend:', error);
+        }
+      }
+    };
+
+    setupNotifications();
     const unsubscribe = setupNotificationListeners();
     return () => unsubscribe();
   }, []);
