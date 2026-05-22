@@ -7,6 +7,7 @@ import {
   ScrollView,
   Linking,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { ScreenContainer } from "./screen-container";
@@ -72,9 +73,19 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
     console.warn("WebView error:", nativeEvent);
 
     // Only show error if it's not a connectivity issue that might be handled by cache
-    if (!nativeEvent.description.includes("net::ERR_CACHE_MISS")) {
+    // We are more lenient here to allow Service Worker to handle offline states
+    if (
+      !nativeEvent.description.includes("net::ERR_CACHE_MISS") &&
+      !nativeEvent.description.includes("net::ERR_INTERNET_DISCONNECTED") &&
+      !nativeEvent.description.includes("net::ERR_NAME_NOT_RESOLVED")
+    ) {
       setHasError(true);
       setErrorMessage(MYANMAR_STRINGS.errors.loadingFailed);
+    } else {
+      // If it's a disconnection error, we don't show the full-screen error immediately
+      // because the Service Worker might be serving cached content.
+      // We only hide the loading indicator.
+      setIsLoading(false);
     }
   };
 
@@ -82,12 +93,13 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
   const handleLoadEnd = () => {
     setIsLoading(false);
     setIsRefreshing(false);
-    setHasError(false);
+    // Don't reset hasError here if we are offline, let the error handler decide
   };
 
   // Handle refresh
   const handleRefresh = () => {
     setIsRefreshing(true);
+    setHasError(false);
     if (webViewRef.current) {
       webViewRef.current.reload();
     }
@@ -145,11 +157,17 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={handleLoadEnd}
         onError={handleWebViewError}
+        onHttpError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          if (nativeEvent.statusCode >= 400) {
+            console.warn("HTTP error:", nativeEvent.statusCode);
+          }
+        }}
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         cacheEnabled={true}
-        // Use LOAD_CACHE_ELSE_NETWORK for better offline support
+        // LOAD_CACHE_ELSE_NETWORK is crucial for offline support in WebView
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         startInLoadingState={true}
         scalesPageToFit={true}
@@ -157,8 +175,12 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         allowsInlineMediaPlayback={true}
         mediaPlaybackRequiresUserAction={false}
         mixedContentMode="always"
-        // Enable pull to refresh inside WebView if supported
         pullToRefreshEnabled={true}
+        // Set a custom user agent to ensure consistent behavior
+        userAgent="Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 MibaMyittaApp/1.0"
+        // Ensure third party cookies and storage are allowed for Telegram images
+        thirdPartyCookiesEnabled={true}
+        sharedCookiesEnabled={true}
       />
     </ScreenContainer>
   );
