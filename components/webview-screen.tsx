@@ -8,11 +8,14 @@ import {
   Linking,
   RefreshControl,
   Platform,
+  Alert,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { ScreenContainer } from "./screen-container";
 import { MYANMAR_STRINGS } from "@/lib/myanmar-strings";
 import { Ionicons } from "@expo/vector-icons";
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
 
 const WEBSITE_URL = "https://mibamyitta.shop";
 
@@ -26,6 +29,47 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const webViewRef = React.useRef<WebView>(null);
+
+  // Handle messages from WebView (Website)
+  const onMessage = async (event: any) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      
+      if (data.type === "SAVE_IMAGE" && data.url) {
+        handleSaveImage(data.url);
+      }
+    } catch (error) {
+      console.error("Message error:", error);
+    }
+  };
+
+  const handleSaveImage = async (imageUrl: string) => {
+    try {
+      // Request permissions
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permission Required", "ပုံသိမ်းရန်အတွက် Storage Permission ပေးဖို့ လိုအပ်ပါတယ်ခင်ဗျာ။");
+        return;
+      }
+
+      // Download the image
+      const filename = `miba-myitta-${Date.now()}.jpg`;
+      const fileUri = FileSystem.documentDirectory + filename;
+      
+      const downloadRes = await FileSystem.downloadAsync(imageUrl, fileUri);
+      
+      if (downloadRes.status === 200) {
+        // Save to gallery
+        await MediaLibrary.saveToLibraryAsync(downloadRes.uri);
+        Alert.alert("Success", "ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။");
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Save image error:", error);
+      Alert.alert("Error", "ပုံသိမ်းရာတွင် အဆင်မပြေဖြစ်သွားပါသည်။ နောက်တစ်ကြိမ် ပြန်ကြိုးစားကြည့်ပါဦး။");
+    }
+  };
 
   // Handle WebView navigation
   const handleShouldStartLoadWithRequest = (request: any) => {
@@ -72,8 +116,6 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
     const { nativeEvent } = syntheticEvent;
     console.warn("WebView error:", nativeEvent);
 
-    // Only show error if it's not a connectivity issue that might be handled by cache
-    // We are more lenient here to allow Service Worker to handle offline states
     if (
       !nativeEvent.description.includes("net::ERR_CACHE_MISS") &&
       !nativeEvent.description.includes("net::ERR_INTERNET_DISCONNECTED") &&
@@ -82,21 +124,15 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
       setHasError(true);
       setErrorMessage(MYANMAR_STRINGS.errors.loadingFailed);
     } else {
-      // If it's a disconnection error, we don't show the full-screen error immediately
-      // because the Service Worker might be serving cached content.
-      // We only hide the loading indicator.
       setIsLoading(false);
     }
   };
 
-  // Handle load end
   const handleLoadEnd = () => {
     setIsLoading(false);
     setIsRefreshing(false);
-    // Don't reset hasError here if we are offline, let the error handler decide
   };
 
-  // Handle refresh
   const handleRefresh = () => {
     setIsRefreshing(true);
     setHasError(false);
@@ -157,6 +193,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={handleLoadEnd}
         onError={handleWebViewError}
+        onMessage={onMessage}
         onHttpError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
           if (nativeEvent.statusCode >= 400) {
@@ -167,7 +204,6 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         cacheEnabled={true}
-        // LOAD_CACHE_ELSE_NETWORK is crucial for offline support in WebView
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
         startInLoadingState={true}
         scalesPageToFit={true}
@@ -176,9 +212,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         mediaPlaybackRequiresUserAction={false}
         mixedContentMode="always"
         pullToRefreshEnabled={true}
-        // Set a custom user agent to ensure consistent behavior
         userAgent="Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 MibaMyittaApp/1.0"
-        // Ensure third party cookies and storage are allowed for Telegram images
         thirdPartyCookiesEnabled={true}
         sharedCookiesEnabled={true}
       />
