@@ -45,21 +45,18 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
 
   const handleSaveImage = async (imageUrl: string) => {
     try {
-      // Request permissions
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission Required", "ပုံသိမ်းရန်အတွက် Storage Permission ပေးဖို့ လိုအပ်ပါတယ်ခင်ဗျာ။");
         return;
       }
 
-      // Download the image
       const filename = `miba-myitta-${Date.now()}.jpg`;
       const fileUri = FileSystem.documentDirectory + filename;
       
       const downloadRes = await FileSystem.downloadAsync(imageUrl, fileUri);
       
       if (downloadRes.status === 200) {
-        // Save to gallery
         await MediaLibrary.saveToLibraryAsync(downloadRes.uri);
         Alert.alert("Success", "ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။");
       } else {
@@ -71,51 +68,29 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
     }
   };
 
-  // Handle WebView navigation
   const handleShouldStartLoadWithRequest = (request: any) => {
     const url = request.url;
-
-    // Handle Telegram links
     if (url.includes("t.me/") || url.startsWith("tg://")) {
-      Linking.openURL(url).catch((err) =>
-        console.error("Error opening Telegram:", err)
-      );
+      Linking.openURL(url).catch((err) => console.error("Error opening Telegram:", err));
       return false;
     }
-
-    // Handle Viber links
     if (url.includes("viber.com/") || url.startsWith("viber://")) {
-      Linking.openURL(url).catch((err) =>
-        console.error("Error opening Viber:", err)
-      );
+      Linking.openURL(url).catch((err) => console.error("Error opening Viber:", err));
       return false;
     }
-
-    // Handle phone calls
     if (url.startsWith("tel:")) {
-      Linking.openURL(url).catch((err) =>
-        console.error("Error opening phone:", err)
-      );
+      Linking.openURL(url).catch((err) => console.error("Error opening phone:", err));
       return false;
     }
-
-    // Handle email
     if (url.startsWith("mailto:")) {
-      Linking.openURL(url).catch((err) =>
-        console.error("Error opening email:", err)
-      );
+      Linking.openURL(url).catch((err) => console.error("Error opening email:", err));
       return false;
     }
-
-    // Allow all other URLs to load in WebView
     return true;
   };
 
-  // Handle WebView errors
   const handleWebViewError = (syntheticEvent: any) => {
     const { nativeEvent } = syntheticEvent;
-    console.warn("WebView error:", nativeEvent);
-
     if (
       !nativeEvent.description.includes("net::ERR_CACHE_MISS") &&
       !nativeEvent.description.includes("net::ERR_INTERNET_DISCONNECTED") &&
@@ -162,7 +137,6 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
             <Text className="text-muted text-sm mt-2 text-center">
               {MYANMAR_STRINGS.errors.timeoutError}
             </Text>
-
             <Pressable
               onPress={handleRefresh}
               className="mt-6 bg-primary px-6 py-3 rounded-lg"
@@ -173,16 +147,6 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
             </Pressable>
           </View>
         </ScrollView>
-      )}
-
-      {/* Loading State */}
-      {isLoading && !hasError && (
-        <View className="absolute inset-0 flex items-center justify-center bg-background z-50">
-          <ActivityIndicator size="large" color="#b5ac8a" />
-          <Text className="text-muted mt-4">
-            {MYANMAR_STRINGS.labels.loading}
-          </Text>
-        </View>
       )}
 
       {/* WebView */}
@@ -205,7 +169,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         domStorageEnabled={true}
         cacheEnabled={true}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        startInLoadingState={true}
+        startInLoadingState={false} // Disable default loading state
         scalesPageToFit={true}
         originWhitelist={["*"]}
         allowsInlineMediaPlayback={true}
