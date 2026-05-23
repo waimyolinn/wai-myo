@@ -21,7 +21,7 @@ const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
   version: "2.0.0",
-  icon: "./assets/images/icon-original.png",
+  icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "dark",
   newArchEnabled: true,
@@ -34,9 +34,8 @@ const config: ExpoConfig = {
   },
   android: {
     adaptiveIcon: {
-      backgroundColor: "#84102d",
-
-
+      foregroundImage: "./assets/images/adaptive-icon.png",
+      backgroundColor: "#FFFFFF",
       monochromeImage: "./assets/images/android-icon-monochrome.png",
     },
     edgeToEdgeEnabled: true,
