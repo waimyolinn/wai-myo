@@ -52,12 +52,13 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
       }
 
       const filename = `miba-myitta-${Date.now()}.jpg`;
-      const fileUri = FileSystem.documentDirectory + filename;
+      const fileUri = FileSystem.cacheDirectory + filename;
       
       const downloadRes = await FileSystem.downloadAsync(imageUrl, fileUri);
       
       if (downloadRes.status === 200) {
-        await MediaLibrary.saveToLibraryAsync(downloadRes.uri);
+        const asset = await MediaLibrary.createAssetAsync(downloadRes.uri);
+        await MediaLibrary.createAlbumAsync("Miba Myitta", asset, false);
         Alert.alert("Success", "ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။");
       } else {
         throw new Error("Download failed");

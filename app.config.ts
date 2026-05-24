@@ -88,6 +88,7 @@ const config: ExpoConfig = {
   },
     plugins: [
       "expo-asset",
+    "expo-media-library",
     "expo-router",
     "expo-notifications",
     [
@@ -123,6 +124,11 @@ const config: ExpoConfig = {
   },
   // Fullscreen mode for WebView app
   assetBundlePatterns: ["**/*"],
+  splash: {
+    image: "./assets/images/icon.png",
+    resizeMode: "contain",
+    backgroundColor: "#000000"
+  },
   owner: "wiamyolinn",
   extra: {
     eas: {
