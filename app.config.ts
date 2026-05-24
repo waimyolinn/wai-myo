@@ -126,7 +126,7 @@ const config: ExpoConfig = {
   owner: "wiamyolinn",
   extra: {
     eas: {
-      projectId: "30451cbd-a868-4d74-8c68-85bcaf2cad3e"
+      projectId: "5a20b844-0045-412e-8948-1b208b84eac5"
     }
   }
 };
