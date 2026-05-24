@@ -8,7 +8,7 @@ const customPackageName = "com.mibamyitta.wm";
 const env = {
   // App branding - update these values directly (do not use env vars)
   appName: "မိဘမေတ္တာ အထည်ဆိုင်",
-  appSlug: "miba-myitta",
+  appSlug: "mibamyitta",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
   logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-GPAMvZnoaFVQfxM549bJAg.webp",
@@ -126,7 +126,7 @@ const config: ExpoConfig = {
   owner: "wiamyolinn",
   extra: {
     eas: {
-      projectId: "5a20b844-0045-412e-8948-1b208b84eac5"
+      projectId: "30451cbd-a868-4d74-8c68-85bcaf2cad3e"
     }
   }
 };
