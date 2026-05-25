@@ -59,7 +59,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
       }
 
       const filename = `miba-myitta-${Date.now()}.jpg`;
-      const fileUri = FileSystem.cacheDirectory + filename;
+      const fileUri = ((FileSystem as any).cacheDirectory || "") + filename;
       
       let localUri = "";
 
@@ -67,7 +67,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
       if (imageSource.startsWith("data:image")) {
         const base64Data = imageSource.split("base64,")[1];
         await FileSystem.writeAsStringAsync(fileUri, base64Data, {
-          encoding: FileSystem.EncodingType.Base64,
+          encoding: (FileSystem as any).EncodingType.Base64,
         });
         localUri = fileUri;
       } else {
@@ -75,20 +75,34 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         if (downloadRes.status === 200) {
           localUri = downloadRes.uri;
         } else {
-          throw new Error(`Download failed`);
+          throw new Error(`Download failed with status ${downloadRes.status}`);
         }
       }
 
-      // 3. Save to Media Library without Alert
+      // 3. Save to Media Library
       if (localUri) {
-        await MediaLibrary.saveToLibraryAsync(localUri);
-        
-        // Success feedback using Toast instead of Alert
-        if (Platform.OS === 'android') {
-          ToastAndroid.show("ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။", ToastAndroid.LONG);
-        } else {
-          // iOS doesn't have Toast, so we can use a very simple Alert or just nothing
-          // Alert.alert("Success", "Saved to gallery");
+        try {
+          const asset = await MediaLibrary.createAssetAsync(localUri);
+          
+          // Check if album exists, if not create it
+          const album = await MediaLibrary.getAlbumAsync("MibaMyitta");
+          if (album === null) {
+            await MediaLibrary.createAlbumAsync("MibaMyitta", asset, false);
+          } else {
+            await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+          }
+          
+          // Success feedback using Toast instead of Alert
+          if (Platform.OS === 'android') {
+            ToastAndroid.show("ပုံကို Gallery (MibaMyitta album) ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။", ToastAndroid.LONG);
+          }
+        } catch (saveError) {
+          console.error("MediaLibrary save error:", saveError);
+          // Fallback to simple save if album creation fails
+          await MediaLibrary.saveToLibraryAsync(localUri);
+          if (Platform.OS === 'android') {
+            ToastAndroid.show("ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။", ToastAndroid.LONG);
+          }
         }
         
         // Clean up

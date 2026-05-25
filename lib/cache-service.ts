@@ -6,7 +6,7 @@
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CACHE_DIR = `${FileSystem.cacheDirectory}mibamyitta-cache/`;
+const CACHE_DIR = `${(FileSystem as any).cacheDirectory || ""}mibamyitta-cache/`;
 const CACHE_METADATA_KEY = "cache_metadata";
 const MAX_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
 const CACHE_EXPIRY_DAYS = 7;
@@ -149,10 +149,16 @@ export async function getCachedImage(url: string): Promise<string | null> {
   try {
     // Try to fetch from network first
     try {
-      const response = await fetch(url, { timeout: 10000 });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
       if (response.ok) {
         const blob = await response.blob();
         const arrayBuffer = await blob.arrayBuffer();
+        // Use standard Buffer-like conversion if available or standard btoa
         const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
         // Cache the image
