@@ -6,11 +6,8 @@ import type { ExpoConfig } from "expo/config";
 const customPackageName = "com.mibamyitta.wm";
 
 const env = {
-  // App branding - update these values directly (do not use env vars)
   appName: "မိဘမေတ္တာ အထည်ဆိုင်",
   appSlug: "mibamyitta",
-  // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
-  // Leave empty to use the default icon from assets/images/icon.png
   logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663668194092/dEZFCY8gzhfnHrU7QdHyU9/icon-GPAMvZnoaFVQfxM549bJAg.webp",
   scheme: "mibamyitta",
   iosBundleId: customPackageName,
@@ -20,7 +17,7 @@ const env = {
 const config: ExpoConfig = {
   name: env.appName,
   slug: env.appSlug,
-  version: "2.0.0",
+  version: "2.0.1", // Increment version
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
   userInterfaceStyle: "dark",
@@ -29,7 +26,9 @@ const config: ExpoConfig = {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
     "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "မိဘမေတ္တာ အထည်ဆိုင်မှ ပုံများကို သင့်ဖုန်းထဲသို့ သိမ်းဆည်းရန်အတွက် ဓါတ်ပုံများကို အသုံးပြုခွင့်ပေးရန် လိုအပ်ပါသည်။",
+        "NSPhotoLibraryAddUsageDescription": "မိဘမေတ္တာ အထည်ဆိုင်မှ ပုံများကို သင့်ဖုန်းထဲသို့ သိမ်းဆည်းရန်အတွက် ဓါတ်ပုံများကို အသုံးပြုခွင့်ပေးရန် လိုအပ်ပါသည်။"
       }
   },
   android: {
@@ -48,33 +47,19 @@ const config: ExpoConfig = {
       "VIBRATE",
       "WRITE_EXTERNAL_STORAGE",
       "READ_EXTERNAL_STORAGE",
+      "READ_MEDIA_IMAGES", // Added for Android 13+
+      "READ_MEDIA_VIDEO"   // Added for Android 13+
     ],
-
     intentFilters: [
       {
         action: "VIEW",
         autoVerify: true,
         data: [
-          {
-            scheme: env.scheme,
-            host: "*",
-          },
-          {
-            scheme: "https",
-            host: "mibamyitta.shop",
-          },
-          {
-            scheme: "http",
-            host: "mibamyitta.shop",
-          },
-          {
-            scheme: "viber",
-            host: "*",
-          },
-          {
-            scheme: "tg",
-            host: "*",
-          },
+          { scheme: env.scheme, host: "*" },
+          { scheme: "https", host: "mibamyitta.shop" },
+          { scheme: "http", host: "mibamyitta.shop" },
+          { scheme: "viber", host: "*" },
+          { scheme: "tg", host: "*" }
         ],
         category: ["BROWSABLE", "DEFAULT"],
       },
@@ -86,25 +71,26 @@ const config: ExpoConfig = {
     favicon: "./assets/images/favicon.png",
     backgroundColor: "#1a1a1a",
   },
-    plugins: [
-      "expo-asset",
-    "expo-media-library",
+  plugins: [
+    "expo-asset",
+    [
+      "expo-media-library",
+      {
+        photosPermission: "မိဘမေတ္တာ အထည်ဆိုင်မှ ပုံများကို သင့်ဖုန်းထဲသို့ သိမ်းဆည်းရန်အတွက် ဓါတ်ပုံများကို အသုံးပြုခွင့်ပေးရန် လိုအပ်ပါသည်။",
+        savePhotosPermission: "မိဘမေတ္တာ အထည်ဆိုင်မှ ပုံများကို သင့်ဖုန်းထဲသို့ သိမ်းဆည်းရန်အတွက် ဓါတ်ပုံများကို အသုံးပြုခွင့်ပေးရန် လိုအပ်ပါသည်။",
+        isAccessMediaLocationEnabled: true
+      }
+    ],
     "expo-router",
     "expo-notifications",
     [
       "expo-audio",
-      {
-        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone.",
-      },
+      { microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone." }
     ],
     [
       "expo-video",
-      {
-        supportsBackgroundPlayback: true,
-        supportsPictureInPicture: true,
-      },
+      { supportsBackgroundPlayback: true, supportsPictureInPicture: true }
     ],
-
     [
       "expo-build-properties",
       {
@@ -122,7 +108,6 @@ const config: ExpoConfig = {
     typedRoutes: true,
     reactCompiler: true,
   },
-  // Fullscreen mode for WebView app
   assetBundlePatterns: ["**/*"],
   splash: {
     image: "./assets/images/icon.png",

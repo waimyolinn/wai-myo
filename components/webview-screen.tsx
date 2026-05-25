@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Platform,
   Alert,
+  ToastAndroid,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import { ScreenContainer } from "./screen-container";
@@ -43,29 +44,61 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
     }
   };
 
-  const handleSaveImage = async (imageUrl: string) => {
+  const handleSaveImage = async (imageSource: string) => {
     try {
+      // 1. Check/Request permissions quietly
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission Required", "ပုံသိမ်းရန်အတွက် Storage Permission ပေးဖို့ လိုအပ်ပါတယ်ခင်ဗျာ။");
         return;
       }
 
+      // Show a small toast for starting download (Android only)
+      if (Platform.OS === 'android') {
+        ToastAndroid.show("သိမ်းဆည်းနေပါသည်...", ToastAndroid.SHORT);
+      }
+
       const filename = `miba-myitta-${Date.now()}.jpg`;
       const fileUri = FileSystem.cacheDirectory + filename;
       
-      const downloadRes = await FileSystem.downloadAsync(imageUrl, fileUri);
-      
-      if (downloadRes.status === 200) {
-        const asset = await MediaLibrary.createAssetAsync(downloadRes.uri);
-        await MediaLibrary.createAlbumAsync("Miba Myitta", asset, false);
-        Alert.alert("Success", "ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။");
+      let localUri = "";
+
+      // 2. Check if source is base64 or URL
+      if (imageSource.startsWith("data:image")) {
+        const base64Data = imageSource.split("base64,")[1];
+        await FileSystem.writeAsStringAsync(fileUri, base64Data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        localUri = fileUri;
       } else {
-        throw new Error("Download failed");
+        const downloadRes = await FileSystem.downloadAsync(imageSource, fileUri);
+        if (downloadRes.status === 200) {
+          localUri = downloadRes.uri;
+        } else {
+          throw new Error(`Download failed`);
+        }
+      }
+
+      // 3. Save to Media Library without Alert
+      if (localUri) {
+        await MediaLibrary.saveToLibraryAsync(localUri);
+        
+        // Success feedback using Toast instead of Alert
+        if (Platform.OS === 'android') {
+          ToastAndroid.show("ပုံကို Gallery ထဲသို့ သိမ်းဆည်းပြီးပါပြီ။", ToastAndroid.LONG);
+        } else {
+          // iOS doesn't have Toast, so we can use a very simple Alert or just nothing
+          // Alert.alert("Success", "Saved to gallery");
+        }
+        
+        // Clean up
+        await FileSystem.deleteAsync(fileUri, { idempotent: true });
       }
     } catch (error) {
       console.error("Save image error:", error);
-      Alert.alert("Error", "ပုံသိမ်းရာတွင် အဆင်မပြေဖြစ်သွားပါသည်။ နောက်တစ်ကြိမ် ပြန်ကြိုးစားကြည့်ပါဦး။");
+      if (Platform.OS === 'android') {
+        ToastAndroid.show("ပုံသိမ်း၍ မရပါ၊ နောက်တစ်ကြိမ် ပြန်ကြိုးစားပါ။", ToastAndroid.SHORT);
+      }
     }
   };
 
