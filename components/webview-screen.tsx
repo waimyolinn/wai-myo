@@ -139,15 +139,22 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
 
   const handleWebViewError = (syntheticEvent: any) => {
     const { nativeEvent } = syntheticEvent;
-    if (
-      !nativeEvent.description.includes("net::ERR_CACHE_MISS") &&
-      !nativeEvent.description.includes("net::ERR_INTERNET_DISCONNECTED") &&
-      !nativeEvent.description.includes("net::ERR_NAME_NOT_RESOLVED")
-    ) {
+    
+    // Silence common offline errors because our Service Worker and LOAD_CACHE_ELSE_NETWORK will handle them
+    const isOfflineError = 
+      nativeEvent.description?.includes("net::ERR_INTERNET_DISCONNECTED") ||
+      nativeEvent.description?.includes("net::ERR_NAME_NOT_RESOLVED") ||
+      nativeEvent.description?.includes("net::ERR_CACHE_MISS") ||
+      nativeEvent.description?.includes("net::ERR_CONNECTION_REFUSED");
+
+    if (!isOfflineError) {
       setHasError(true);
       setErrorMessage(MYANMAR_STRINGS.errors.loadingFailed);
     } else {
+      // If it's an offline error, we don't show the error screen 
+      // because the WebView will try to show the cached version
       setIsLoading(false);
+      console.log("Offline mode detected in WebView, suppressing error screen.");
     }
   };
 
@@ -208,7 +215,8 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         onMessage={onMessage}
         onHttpError={(syntheticEvent) => {
           const { nativeEvent } = syntheticEvent;
-          if (nativeEvent.statusCode >= 400) {
+          // Only show error for critical failures, ignore 404s or other non-breaking issues when offline
+          if (nativeEvent.statusCode >= 500) {
             console.warn("HTTP error:", nativeEvent.statusCode);
           }
         }}
@@ -217,7 +225,7 @@ export function WebViewScreen({ onNotificationReceived }: WebViewScreenProps) {
         domStorageEnabled={true}
         cacheEnabled={true}
         cacheMode="LOAD_CACHE_ELSE_NETWORK"
-        startInLoadingState={false} // Disable default loading state
+        startInLoadingState={false}
         scalesPageToFit={true}
         originWhitelist={["*"]}
         allowsInlineMediaPlayback={true}
